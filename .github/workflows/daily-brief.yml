@@ -1,0 +1,58 @@
+name: 아침 일정 카카오톡 브리핑
+
+on:
+  schedule:
+    # UTC 기준. 22:50 UTC = 한국시간 07:50.
+    # GitHub Actions 예약 실행은 보통 몇 분 늦게 뜨기 때문에 8시에 맞춰 조금 앞당겨 둔다.
+    # 정각에 맞추고 싶으면 "0 23 * * *" 로 바꾸면 된다 (= 한국시간 08:00).
+    - cron: "50 22 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "카카오톡으로 보내지 않고 메시지만 확인"
+        type: boolean
+        default: false
+      date:
+        description: "특정 날짜로 테스트 (YYYY-MM-DD, 비우면 오늘)"
+        type: string
+        default: ""
+
+concurrency:
+  group: daily-brief
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 브리핑 전송
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          GOOGLE_CALENDAR_ICS_URLS: ${{ secrets.GOOGLE_CALENDAR_ICS_URLS }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GOOGLE_CALENDAR_IDS: ${{ vars.GOOGLE_CALENDAR_IDS }}
+          CALENDAR_SOURCE: ${{ vars.CALENDAR_SOURCE }}
+          TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Seoul' }}
+          # refresh token 이 새로 발급될 때 시크릿을 자동 갱신하려면 넣는다(선택).
+          SECRETS_UPDATE_TOKEN: ${{ secrets.SECRETS_UPDATE_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PYTHONPATH: src
+        run: |
+          python -m daily_brief \
+            ${{ inputs.dry_run && '--dry-run' || '' }} \
+            ${{ inputs.date && format('--date {0}', inputs.date) || '' }}

@@ -1,0 +1,10 @@
+[project]
+name = "daily-brief"
+version = "0.1.0"
+description = "구글 캘린더 하루 일정을 매일 아침 카카오톡으로 보내 주는 자동화"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

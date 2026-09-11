@@ -1,0 +1,6 @@
+requests>=2.31,<3
+icalendar>=6.0,<7
+recurring-ical-events>=3.2,<4
+python-dateutil>=2.9,<3
+tzdata>=2024.1
+pynacl>=1.5,<2
