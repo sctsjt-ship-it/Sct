@@ -50,7 +50,6 @@ jobs:
           TIMEZONE: ${{ vars.TIMEZONE || 'Asia/Seoul' }}
           # refresh token 이 새로 발급될 때 시크릿을 자동 갱신하려면 넣는다(선택).
           SECRETS_UPDATE_TOKEN: ${{ secrets.SECRETS_UPDATE_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
           PYTHONPATH: src
         run: |
           python -m daily_brief \
