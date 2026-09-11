@@ -131,8 +131,9 @@ pytest
 ## 토큰 만료에 대해
 
 카카오 refresh token 은 유효기간이 약 2개월이지만, **매일 자동화가 돌면서 자동으로 연장**됩니다.
-남은 기간이 1개월 미만이 되면 카카오가 새 토큰을 내려주는데, 기본 설정에서는 이 값을 Actions 로그에
-경고로 남기므로 그때 `KAKAO_REFRESH_TOKEN` 시크릿만 새 값으로 바꾸면 됩니다.
+남은 기간이 1개월 미만이 되면 카카오가 새 토큰을 내려줍니다. 이때 Actions 로그에 "새 토큰이 발급됐다"는
+경고만 남고 **토큰 값 자체는 로그에 남기지 않습니다**(로그가 공개될 수 있으므로). 경고를 보면 2단계를
+다시 실행해 `KAKAO_REFRESH_TOKEN` 시크릿을 새 값으로 바꿔 주세요.
 
 이것도 자동으로 처리하려면 `Secrets` 쓰기 권한이 있는 PAT 를 `SECRETS_UPDATE_TOKEN` 시크릿으로 넣어 두세요.
 (Fine-grained PAT → 이 레포 → Repository permissions → **Secrets: Read and write**)

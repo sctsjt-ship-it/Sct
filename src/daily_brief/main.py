@@ -71,11 +71,13 @@ def collect_events(config: Config, day: date, session: requests.Session) -> list
 def persist_rotated_token(config: Config, new_refresh_token: str, session: requests.Session) -> None:
     """카카오가 새 refresh token 을 줬을 때 저장을 시도한다."""
     if not (config.github_repository and config.github_token):
+        # 토큰 값 자체는 절대 로그에 남기지 않는다. 공개 저장소에서는 실행 로그를
+        # 누구나 볼 수 있기 때문이다.
         logger.warning(
             "카카오가 새 refresh token 을 발급했지만 자동 저장이 꺼져 있습니다. "
-            "GitHub 시크릿 %s 값을 직접 바꿔 주세요: %s",
+            "scripts/kakao_authorize.py 를 다시 실행해 GitHub 시크릿 %s 을(를) "
+            "갱신해 주세요. (SECRETS_UPDATE_TOKEN 을 등록하면 이 과정이 자동화됩니다)",
             SECRET_NAME,
-            new_refresh_token,
         )
         return
     try:
